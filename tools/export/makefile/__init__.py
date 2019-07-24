@@ -34,7 +34,6 @@ SHELL_ESCAPE_TABLE = {
     ")": "\)",
 }
 
-
 def shell_escape(string):
     return "".join(SHELL_ESCAPE_TABLE.get(char, char) for char in string)
 
@@ -66,6 +65,8 @@ class Makefile(Exporter):
         "LPC4088Code.binary_hook",
         "PSOC6Code.complete"
     ])
+
+    OUTPUT = 'Makefile'
 
     @classmethod
     def is_target_supported(cls, target_name):
@@ -109,6 +110,8 @@ class Makefile(Exporter):
             'asm_cmd': basename(self.toolchain.asm[0]),
             'ld_cmd': basename(self.toolchain.ld[0]),
             'elf2bin_cmd': basename(self.toolchain.elf2bin),
+            'objdump_cmd': basename(self.toolchain.objdump),
+            'size_cmd': basename(self.toolchain.size),
             'link_script_ext': self.toolchain.LINKER_EXT,
             'link_script_option': self.LINK_SCRIPT_OPTION,
             'user_library_flag': self.USER_LIBRARY_FLAG,
@@ -163,7 +166,7 @@ class Makefile(Exporter):
              in self.toolchain.target.extra_labels] +\
             ['makefile/%s.tmpl' % self.TEMPLATE]:
             try:
-                self.gen_file(templatefile, ctx, 'Makefile')
+                self.gen_file(templatefile, ctx, self.OUTPUT)
                 break
             except TemplateNotFound:
                 pass
@@ -229,7 +232,6 @@ class Makefile(Exporter):
         else:
             return 0
 
-
 class GccArm(Makefile):
     """GCC ARM specific makefile target"""
     NAME = 'Make-GCC-ARM'
@@ -248,7 +250,6 @@ class GccArm(Makefile):
     @staticmethod
     def prepare_sys_lib(libname):
         return "-l" + libname
-
 
 class Arm(Makefile):
     """ARM Compiler generic makefile target"""
@@ -327,7 +328,6 @@ class Armc6(Arm):
             return apply_supported_whitelist(
                     cls.TOOLCHAIN, cls.POST_BINARY_WHITELIST, target)
 
-
 class IAR(Makefile):
     """IAR specific makefile target"""
     NAME = 'Make-IAR'
@@ -348,3 +348,24 @@ class IAR(Makefile):
         if "lib" == libname[:3]:
             libname = libname[3:]
         return "-l" + splitext(libname)[0]
+
+class SimulinkGccArm(Makefile):
+    """SIMULINK/GCC ARM specific makefile target"""
+    TARGETS = [target for target, obj in TARGET_MAP.iteritems()
+               if "GCC_ARM" in obj.supported_toolchains]
+    NAME = 'SIMULINK-GCC-ARM'
+    TEMPLATE = 'simulink-gcc-arm'
+    TOOLCHAIN = "GCC_ARM"
+    LINK_SCRIPT_OPTION = "-T"
+    USER_LIBRARY_FLAG = "-L"
+    OUTPUT = 'target_tools.mk'
+
+    @staticmethod
+    def prepare_lib(libname):
+        if "lib" == libname[:3]:
+            libname = libname[3:-2]
+        return "-l" + libname
+
+    @staticmethod
+    def prepare_sys_lib(libname):
+        return "-l" + libname

@@ -32,7 +32,7 @@ from ..build_api import prepare_toolchain
 from ..targets import TARGET_NAMES
 from . import (lpcxpresso, iar, makefile, embitz, coide, kds, simplicity,
                atmelstudio, mcuxpresso, sw4stm32, e2studio, zip, cmsis, uvision,
-               cdt, vscode, gnuarmeclipse, qtcreator, cmake, nb, cces, codeblocks)
+               cdt, vscode, gnuarmeclipse, qtcreator, cmake, nb, cces, codeblocks, simulink)
 
 EXPORTERS = {
     u'uvision6': uvision.UvisionArmc6,
@@ -57,7 +57,8 @@ EXPORTERS = {
     u'vscode_armc5' : vscode.VSCodeArmc5,
     u'cmake_gcc_arm': cmake.GccArm,
     u'cces' : cces.CCES,
-    u'codeblocks': codeblocks.CodeBlocks
+    u'codeblocks': codeblocks.CodeBlocks,
+    u'simulink': simulink.SimulinkGccArm
 }
 
 ERROR_MESSAGE_UNSUPPORTED_TOOLCHAIN = """

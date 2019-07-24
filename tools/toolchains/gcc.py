@@ -131,6 +131,8 @@ class GCC(mbedToolchain):
 
         self.ar = join(tool_path, "arm-none-eabi-ar")
         self.elf2bin = join(tool_path, "arm-none-eabi-objcopy")
+        self.objdump = join(tool_path, "arm-none-eabi-objdump")
+        self.size = join(tool_path, "arm-none-eabi-size")
 
         self.use_distcc = (bool(getenv("DISTCC_POTENTIAL_HOSTS", False))
                            and not getenv("MBED_DISABLE_DISTCC", False))
